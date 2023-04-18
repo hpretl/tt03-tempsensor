@@ -17,7 +17,7 @@
 //	is possible.
 //
 //  IMPORTANT: Make sure that the synthesis and optimization tools do not mess
-//	with the resulting netlist, especially at the node `vout_ana_`!
+//	with the resulting netlist, especially at the node `vout_notouch_`!
 
 `ifndef __VDAC_CELL__
 `define __VDAC_CELL__
@@ -30,7 +30,7 @@ module vdac_cell #(parameter PARALLEL_CELLS = 4) (
 	input wire	i_sign,
 	input wire	i_data,
 	input wire	i_enable,
-	output wire	vout_ana_
+	output wire	vout_notouch_
 );
 
 	wire en_vref, en_pupd, npu_pd;
@@ -43,8 +43,8 @@ module vdac_cell #(parameter PARALLEL_CELLS = 4) (
 	genvar i;
 	generate
 		for (i=0; i < PARALLEL_CELLS; i=i+1) begin : einvp_batch
-			(* keep = "true" *) sky130_fd_sc_hd__einvp_1 pupd (.A(npu_pd), .TE(en_pupd), .Z(vout_ana_));
-			(* keep = "true" *) sky130_fd_sc_hd__einvp_1 vref (.A(vout_ana_), .TE(en_vref), .Z(vout_ana_));
+			(* keep = "true" *) sky130_fd_sc_hd__einvp_1 pupd (.A(npu_pd), .TE(en_pupd), .Z(vout_notouch_));
+			(* keep = "true" *) sky130_fd_sc_hd__einvp_1 vref (.A(vout_notouch_), .TE(en_vref), .Z(vout_notouch_));
 		end
   	endgenerate
 

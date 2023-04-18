@@ -17,7 +17,7 @@
 //	is possible.
 //
 //  IMPORTANT: Make sure that the synthesis and optimization tools do not mess
-//	with the resulting netlist, especially at the node `vout_ana_`!
+//	with the resulting netlist, especially at the node `vout_notouch_`!
 
 `ifndef __VDAC__
 `define __VDAC__
@@ -28,7 +28,7 @@
 module vdac #(parameter BITWIDTH = 6) (
 	input wire [BITWIDTH-1:0]	i_data,
 	input wire					i_enable,
-	output wire					vout_ana_
+	output wire					vout_notouch_
 );
 
 	genvar i;
@@ -38,7 +38,7 @@ module vdac #(parameter BITWIDTH = 6) (
 				.i_sign(i_data[BITWIDTH-1]),
 				.i_data(i_data[i]),
 				.i_enable(i_enable),
-				.vout_ana_(vout_ana_)
+				.vout_notouch_(vout_notouch_)
 			);
 		end
 	endgenerate
@@ -48,7 +48,7 @@ module vdac #(parameter BITWIDTH = 6) (
 		.i_sign(1'b0),
 		.i_data(1'b0),
 		.i_enable(i_enable & (~i_data[BITWIDTH-1])),
-		.vout_ana_(vout_ana_)
+		.vout_notouch_(vout_notouch_)
 	);
 
 endmodule // vdac
