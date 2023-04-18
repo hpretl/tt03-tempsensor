@@ -53,6 +53,9 @@ set ::env(CLOCK_TREE_SYNTH) 1
 set ::env(CLOCK_PERIOD) "20000"
 set ::env(CLOCK_PORT) {io_in[0]}
 
+# provide a way for people to stop the resizer from changing cells
+set ::env(RSZ_DONT_TOUCH_RX) "_notouch_"
+
 # hold/slack margin
 # set ::env(PL_RESIZER_HOLD_SLACK_MARGIN) 0.8 
 # set ::env(GLB_RESIZER_HOLD_SLACK_MARGIN) 0.8 
