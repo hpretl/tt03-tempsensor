@@ -60,9 +60,9 @@ module hpretl_tt03_temperature_sensor (
 	// definition of internal wires and regs
 	reg [N_CTR-1:0] ctr;
 	reg [N_VDAC-1:0] tempsens_res_raw;
-	reg [N_VDAC-1:0] calib_mem[0:2**N_VDAC-1];
+	reg [N_VDAC-1:0] calib_mem[0:2**(N_VDAC-1)-1];
 	reg [N_VDAC-1:0] calib_incoming_word;
-	reg [N_VDAC-1:0] calib_store_ctr;
+	reg [N_VDAC-2:0] calib_store_ctr;
 
 	wire [N_VDAC-1:0] tempsens_res;
 	wire [1:0] meas_state = ctr[1:0];
@@ -80,7 +80,7 @@ module hpretl_tt03_temperature_sensor (
 	// debug vectors
 	wire [7:0] dbg1 = cal_ena ? {tempsens_en, tempsens_measure, tempsens_dat} : {temp_delay, in_reset, in_precharge, in_transition, in_transition_ph0, in_transition_ph1, in_measurement, in_evaluation};
 	wire [7:0] dbg2 = cal_ena ? {ctr[7:0]} : {meas_state, tempsens_res_raw};
-	wire [7:0] dbg3 = cal_ena ? {{(N_CTR-12){1'b0}}, ctr[N_CTR-1:8]} : {show_ones, cal_ena, calib_store_ctr};
+	wire [7:0] dbg3 = cal_ena ? {{(N_CTR-12){1'b0}}, ctr[N_CTR-1:8]} : {show_ones, show_tens, cal_ena, calib_store_ctr};
 
 
 	// measurement state machine (meas_state)
@@ -96,7 +96,7 @@ module hpretl_tt03_temperature_sensor (
 
 
 	// select raw or calibrated result
-	assign tempsens_res = cal_ena ? calib_mem[tempsens_res_raw] : tempsens_res_raw;
+	assign tempsens_res = cal_ena ? calib_mem[tempsens_res_raw[N_VDAC-2:0]] : tempsens_res_raw;
 
 
 	// create state signals based on state of state machine
@@ -163,7 +163,7 @@ module hpretl_tt03_temperature_sensor (
 	// keeps rolling around (but starts at zero after reset)
 	always @(posedge cal_ld) begin
 		if (reset) begin
-			calib_store_ctr <= {N_VDAC{1'b0}};
+			calib_store_ctr <= {(N_VDAC-1){1'b0}};
 		end else begin
 			calib_mem[calib_store_ctr] <= calib_incoming_word;
 			calib_store_ctr <= calib_store_ctr + 1'b1;
