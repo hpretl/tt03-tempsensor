@@ -13,7 +13,7 @@ async def test_tempsens(dut):
 
     dut._log.info("configuration")
     dut.en_quick_transition.value = 0
-    det.tempsens_cfg = 3
+    dut.tempsens_cfg = 3
 
     dut._log.info("reset")
     dut.rst.value = 1
