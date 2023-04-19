@@ -15,7 +15,7 @@
 //	TODO
 //	- DONE Add LUT for result calibration
 //	- DONE Add more testmodes
-//	- Simulate logic
+//	- DONE Simulate logic
 //	- Simulate mixed-signal
 
 `default_nettype none
@@ -52,7 +52,8 @@ module hpretl_tt03_temperature_sensor (
 
 	// definition of external outputs
 	wire [7:0] led_out;
-	wire [6:0] segments;
+	wire [6:0] led_segments;
+	wire led_dot = show_ones;
 	assign io_out[7:0] = led_out; 
 
 
@@ -60,10 +61,12 @@ module hpretl_tt03_temperature_sensor (
 	reg [N_CTR-1:0] ctr;
 	reg [N_VDAC-1:0] tempsens_res_raw;
 	wire [N_VDAC-1:0] tempsens_res;
-	reg [(2**(N_VDAC-1)*(N_VDAC-1))-1:0] cal_lut;
+	reg temp_delay_last;
+	reg [(2**(N_VDAC-1)*(N_VDAC-0))-1:0] cal_lut;
 
 	wire [1:0] meas_state = ctr[1:0];
-	wire [N_VDAC-1:0] dac_value = ctr[N_VDAC+1:2];
+	wire [N_VDAC-1:0] dac_value = {N_VDAC{1'b1}} - ctr[N_VDAC+1:2];
+	wire idle_cycle = |ctr[N_CTR-1:N_VDAC+2];
 	wire show_tens = ~ctr[N_CTR-1];
 	wire show_ones = ctr[N_CTR-1];
 
@@ -80,6 +83,8 @@ module hpretl_tt03_temperature_sensor (
 	wire [7:0] dbg3 = {meas_state, tempsens_res_raw};
 	wire [7:0] dbg4 = {ctr[7:0]};
 	wire [7:0] dbg5 = {show_ones, show_tens, ctr[N_CTR-1:8]};
+	wire [7:0] dbg6 = {1'b0, idle_cycle, dac_value};
+	wire [7:0] dbg7 = {1'b1, cal_ena, tempsens_res};
 
 
 	// measurement state machine (meas_state)
@@ -95,13 +100,13 @@ module hpretl_tt03_temperature_sensor (
 
 
 	// create state signals based on state of state machine
-	assign in_reset = (ctr == {N_CTR{1'b0}});
-	assign in_precharge = (meas_state == PRECHARGE);
-	assign in_transition = (meas_state == TRANSITION);
-	assign in_transition_ph0 = in_transition && (clk == 1'b1);
-	assign in_transition_ph1 = in_transition && (clk == 1'b0);
-	assign in_measurement = (meas_state == MEASURE);
-	assign in_evaluation = (meas_state == EVALUATE);
+	assign in_reset = (ctr == {N_CTR{1'b1}});
+	assign in_precharge = (meas_state == PRECHARGE)				&& !in_reset && !idle_cycle;
+	assign in_transition = (meas_state == TRANSITION) 			&& !in_reset && !idle_cycle;
+	assign in_transition_ph0 = in_transition && (clk == 1'b1) 	&& !in_reset && !idle_cycle;
+	assign in_transition_ph1 = in_transition && (clk == 1'b0) 	&& !in_reset && !idle_cycle;
+	assign in_measurement = (meas_state == MEASURE) 			&& !in_reset && !idle_cycle;
+	assign in_evaluation = (meas_state == EVALUATE) 			&& !in_reset && !idle_cycle;
 
 
 	// create temperature sensor input signal based on state signals, gate output to
@@ -121,27 +126,32 @@ module hpretl_tt03_temperature_sensor (
 
 
 	// display decimal number (tens or ones) on number LED or debug signals
-	assign led_out = 	(en_dbg == 3'd0) ? {show_ones, segments} :
+	assign led_out = 	(en_dbg == 3'd0) ? {led_dot, led_segments} :
 						(en_dbg == 3'd1) ? dbg1 :
 						(en_dbg == 3'd2) ? dbg2 :
 						(en_dbg == 3'd3) ? dbg3 :
 						(en_dbg == 3'd4) ? dbg4 :
 						(en_dbg == 3'd5) ? dbg5 :
-						{show_ones, segments};
+						(en_dbg == 3'd6) ? dbg6 :
+						(en_dbg == 3'd7) ? dbg7 :
+						{led_dot, led_segments};
 	
 
 	// state machine implementation for temperature sensor control
     always @(posedge clk) begin
         if (reset) begin
-			ctr <= {N_CTR{1'b0}};
+			ctr <= {N_CTR{1'b1}};
 			tempsens_res_raw <= {N_VDAC{1'b0}};
+			temp_delay_last <= 1'b1;
 		end else begin
 			ctr <= ctr + 1'b1;
 
 			if (in_evaluation) begin
-				if (temp_delay == 1'b0) begin
+				if ((temp_delay_last == 1'b0) && (temp_delay == 1'b1)) begin
 					tempsens_res_raw <= dac_value;
 				end
+
+				temp_delay_last <= temp_delay;
 			end
 		end
 	end
@@ -149,20 +159,20 @@ module hpretl_tt03_temperature_sensor (
 
 	// loading of calibration LUT
 	always @(posedge cal_clk) begin
-		cal_lut <= {cal_lut[(2**(N_VDAC-1)*(N_VDAC-1))-2:0], cal_dat};
+		cal_lut <= {cal_lut[(2**(N_VDAC-1)*(N_VDAC-0))-2:0], cal_dat};
 	end
 
 	// assign wire array to LUT implemented a shift register (for easy load)
-	wire [N_VDAC-2:0] cal_lut_entries[0:(2**(N_VDAC-1))-1];
+	wire [N_VDAC-1:0] cal_lut_entries[0:(2**(N_VDAC-1))-1];
 	genvar i;
 	generate
 		for (i=0; i < 2**(N_VDAC-1); i=i+1) begin : lut_assign
-			assign cal_lut_entries[i] = cal_lut[((5*(i+1))-1) -: 5];
+			assign cal_lut_entries[i] = cal_lut[((6*(i+1))-1) -: 6];
 		end
 	endgenerate
 
 	// apply calibration LUT when enabled
-	assign tempsens_res = cal_ena ? {1'b0, cal_lut_entries[tempsens_res_raw[N_VDAC-2:0]]} : tempsens_res_raw;
+	assign tempsens_res = cal_ena ? cal_lut_entries[tempsens_res_raw[N_VDAC-2:0]] : tempsens_res_raw;
 
 
     // instantiate temperature-dependent delay (this is the core circuit)
@@ -186,7 +196,7 @@ module hpretl_tt03_temperature_sensor (
     // instantiate segment display decoder
     seg7 seg1 (
         .i_disp(digit),
-        .o_segments(segments)
+        .o_segments(led_segments)
     );
 
 endmodule // hpretl_tt03_temperature_sensor

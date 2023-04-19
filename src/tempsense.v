@@ -42,7 +42,7 @@ module tempsense #( parameter DAC_RESOLUTION = 6, parameter CAP_LOAD = 4 )(
       assign dac0 = ~|i_dac_data;
       assign dac1 = &i_dac_data;
 
-      assign #50 dac_change = ~dac0 & ~dac1;
+      assign #50 dac_change = (i_dac_data == 4) ? (~dac0 & ~dac1) : 1'b0;
 
       assign o_tempdelay = ~(i_dac_en & dac_change & i_precharge_n);
 `else
