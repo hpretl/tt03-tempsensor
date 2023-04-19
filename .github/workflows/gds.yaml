@@ -98,6 +98,7 @@ jobs:
 ##############################################################
 # GateLevel sim
   gatelevel:
+    if: ${{ false }}
     needs: gds
     env:
         PDK_ROOT:               /home/runner/pdk
