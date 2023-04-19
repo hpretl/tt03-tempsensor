@@ -12,3 +12,4 @@ sim/simulation/tb_tempsens.spice
 *.cvcrc
 *.out
 sim/hpretl_tt03_temperature_sensor.mag
+sim/hpretl_tt03_temperature_sensor.pex.spice
