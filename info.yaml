@@ -8,10 +8,10 @@ project:
   source_files:        
     - hpretl_tt03_temperature_sensor.v
     - tempsense.v
-    - seg7.v
-    - delay_cell.v
     - vdac.v
     - vdac_cell.v
+    - bin2dec.v
+    - seg7.v
   top_module:  "hpretl_tt03_temperature_sensor"      # put the name of your top module here, make it unique by prepending your github username
 
 # Keep a track of the submission yaml
@@ -25,7 +25,7 @@ documentation:
   author:       "Harald Pretl"
   title:        "Synthesizable Digital Temperature Sensor"
   language:     "Verilog"
-  description:  "Measure the on-chip temperature by creating a temperature-dependent PWM output signal."
+  description:  "Measure the on-chip temperature and display on the LED display."
 
 # Longer description of how the project works. You can use standard markdown format.
   how_it_works: |
@@ -35,47 +35,51 @@ documentation:
       Since the subthreshold current of a MOSFET is a strong function of temperature, the resulting
       delay time is also a strong function of temperature, thus a digital temperature sensor is built.
 
-      The temperature-dependent digital signal is output at the LED dot (io_out[7]).
+      The temperature-dependent digital signal is output at the LED display, showing tens (dot off) and ones (dot on).
+
+      A calibration engine via a LUT is included, to allow to linearize and calibrate the shown
+      temperature code.
 
       io_in[0] is used as a CLK signal, and io_in[1] is used a RESET.
 
-      io_in[7:3] is the 5b DAC code which is applied during the temperature measurement.
+      io_in[4:2] is used to load and enable the calibration engine.
 
-      io_in[2] selects whether a full clock cycle is spent in state (0), or the TRANSITION cycle is only
-      a few inverter delays (1).
-
-      The state of the internal state machine is shown at the 7-segment LED (0 = RESET, 1 = PRECHARGE,
-      2 = TRANSITION, 3 = MEASUREMENT).
+      io_in[7:5] is used to enable various debug modes, presenting internal state signals to the io_out.
 
 # Instructions on how someone could test your project, include things like what buttons do what and how to set the clock if needed
   how_to_test:  |
-      After reset, a period signal with a time-dependent duty cycle is output at io_out[7].
+      After reset, one temperature measurement is taken per second and displayed using the LEDs. A code ranging 0...63 is
+      displayed with tens first (dot off) and ones later (dot on).
 
-      The inputs at io_in[7:3] can be used to calibrate the time delay as a function of temperature (lower code means longer delay).
+      During normal operation io_in[7:5] have to be set to 000. The different debug modes are documented in the Verilog code.
+
+      For calibration, the internal LUT can be serially loaded by using CAL_CLK (io_in[2]) and CAL_DAT (io_in[3]). Once fully
+      loaded the calibration engine is enabled by setting CAL_ENA (io_in[4]) to 1 (setting it to 0 displays the raw sensor
+      code).
 
 # A description of what the inputs do
   inputs:               
     - clock
     - reset
-    - en_quick_transition
-    - dac[0]
-    - dac[1]
-    - dac[2]
-    - dac[3]
-    - dac[4]
+    - cal_clk
+    - cal_dat
+    - cal_ena
+    - debug_mode[0]
+    - debug_mode[1]
+    - debug_mode[2]
 # A description of what the outputs do
   outputs:
-    - segment a
-    - segment b
-    - segment c
-    - segment d
-    - segment e
-    - segment f
-    - segment g
-    - temperature-dependant duty-cycle signal
+    - segment a (or debug information)
+    - segment b (or debug information)
+    - segment c (or debug information)
+    - segment d (or debug information)
+    - segment e (or debug information)
+    - segment f (or debug information)
+    - segment g (or debug information)
+    - indicate ones or tens (or debug information)
 
 # The following fields are optional
-  tag:          "pwm, sensor, temperature"      # comma separated list of tags: test encryption, experiment, clock, animation, utility, industrial, pwm, fpga, alu, microprocessor, risc, riscv, sensor, signal generator, fft, filter, music, bcd, sound, serial, timer, random number generator, calculator, decoder, counter, puzzle, multiplier, game, oscillator,
+  tag:          "sensor, temperature, analog"      # comma separated list of tags: test encryption, experiment, clock, animation, utility, industrial, pwm, fpga, alu, microprocessor, risc, riscv, sensor, signal generator, fft, filter, music, bcd, sound, serial, timer, random number generator, calculator, decoder, counter, puzzle, multiplier, game, oscillator,
   external_hw:  ""      # Describe any external hardware needed
   discord:      ""      # Your discord handle, used for communication and automatically assigning tapeout role after a submission
   doc_link:     ""      # URL to longer form documentation, eg the README.md in your repository
