@@ -13,7 +13,7 @@
 //	limitations under the License.
 
 //	TODO
-//	- CANCEL (too large) Add LUT for result calibration
+//	- DONE Add LUT for result calibration
 //	- DONE Add more testmodes
 //	- Simulate logic
 //	- Simulate mixed-signal
@@ -44,6 +44,9 @@ module hpretl_tt03_temperature_sensor (
 	// definition of external inputs
 	wire clk = io_in[0];
 	wire reset = io_in[1];
+	wire cal_clk = io_in[2];
+	wire cal_dat = io_in[3];
+	wire cal_ena = io_in[4];
 	wire [2:0] en_dbg = io_in[7:5];
 
 
@@ -56,6 +59,8 @@ module hpretl_tt03_temperature_sensor (
 	// definition of internal wires and regs
 	reg [N_CTR-1:0] ctr;
 	reg [N_VDAC-1:0] tempsens_res_raw;
+	wire [N_VDAC-1:0] tempsens_res;
+	reg [(2**(N_VDAC-1)*(N_VDAC-1))-1:0] cal_lut;
 
 	wire [1:0] meas_state = ctr[1:0];
 	wire [N_VDAC-1:0] dac_value = ctr[N_VDAC+1:2];
@@ -142,6 +147,24 @@ module hpretl_tt03_temperature_sensor (
 	end
 
 
+	// loading of calibration LUT
+	always @(posedge cal_clk) begin
+		cal_lut <= {cal_lut[(2**(N_VDAC-1)*(N_VDAC-1))-2:0], cal_dat};
+	end
+
+	// assign wire array to LUT implemented a shift register (for easy load)
+	wire [N_VDAC-2:0] cal_lut_entries[0:(2**(N_VDAC-1))-1];
+	genvar i;
+	generate
+		for (i=0; i < 2**(N_VDAC-1); i=i+1) begin : lut_assign
+			assign cal_lut_entries[i] = cal_lut[((5*(i+1))-1) -: 5];
+		end
+	endgenerate
+
+	// apply calibration LUT when enabled
+	assign tempsens_res = cal_ena ? {1'b0, cal_lut_entries[tempsens_res_raw[N_VDAC-2:0]]} : tempsens_res_raw;
+
+
     // instantiate temperature-dependent delay (this is the core circuit)
     tempsense #(.DAC_RESOLUTION(N_VDAC), .CAP_LOAD(16)) temp1 (
         .i_dac_data(tempsens_dat),
@@ -153,7 +176,7 @@ module hpretl_tt03_temperature_sensor (
 
 	// binary to decimal decoder to show measurement result on 7-segment LED
 	bin2dec dec1 (
-		.i_bin(tempsens_res_raw),
+		.i_bin(tempsens_res),
 		.i_tens(show_tens),
 		.i_ones(show_ones),
 		.o_dec(digit)
