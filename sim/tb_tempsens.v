@@ -7,10 +7,11 @@ module tb_tempsens;
 
     reg CLK = 0;
     reg RESET = 1;
-    reg EN_QUICK_TRANS = 0;
-    reg [4:0] TEMPSENS_CFG = 3;
-    wire TEMPSENS_PWM;
-    wire [6:0] LEDDISP;
+    reg CAL_CLK = 0;
+    reg CAL_DAT = 0;
+    reg CAL_ENA = 0;
+    reg [2:0] DBG = 0;
+    wire [7:0] LEDDISP;
 
 
     initial begin
@@ -19,7 +20,7 @@ module tb_tempsens;
 
         #100 RESET = 0;
 
-        #1000 $finish;        
+        #1640000 $finish;        
     end
 
     // make clock 10kHz
@@ -27,10 +28,9 @@ module tb_tempsens;
 
 
    // wire up the inputs and outputs
-    wire [7:0] inputs = {TEMPSENS_CFG, EN_QUICK_TRANS, RESET, CLK};
+    wire [7:0] inputs = {DBG, CAL_ENA, CAL_DAT, CAL_CLK, RESET, CLK};
     wire [7:0] outputs;
-    assign LEDDISP = outputs[6:0];
-    assign TEMPSENS_PWM = outputs[7];
+    assign LEDDISP = outputs[7:0];
 
     // instantiate the DUT
     hpretl_tt03_temperature_sensor tempsens (
