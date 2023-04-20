@@ -5,8 +5,6 @@ K {}
 V {}
 S {}
 E {}
-N 60 -320 60 -310 {
-lab=VDD}
 N 60 -250 60 -230 {
 lab=GND}
 N 220 -220 220 -210 {
@@ -43,11 +41,11 @@ N 520 -300 520 -290 {
 lab=ts_cfg0}
 N 460 -220 520 -220 {
 lab=GND}
-N 660 -410 700 -410 {
+N 660 -440 700 -440 {
 lab=rst}
 N 660 -220 660 -210 {
 lab=GND}
-N 660 -340 660 -330 {
+N 660 -370 660 -360 {
 lab=GND}
 N 660 -290 660 -280 {
 lab=clk}
@@ -112,7 +110,7 @@ N 2040 -260 2120 -260 {
 lab=GND}
 N 1960 -260 2040 -260 {
 lab=GND}
-N 1740 -260 1880 -260 {
+N 1810 -260 1880 -260 {
 lab=GND}
 N 1510 -500 2120 -500 {
 lab=st2}
@@ -136,18 +134,24 @@ N 1810 -420 1810 -340 {
 lab=st6}
 N 1810 -280 1810 -260 {
 lab=GND}
-N 660 -410 660 -400 {
+N 660 -440 660 -430 {
 lab=rst}
+N 60 -410 60 -390 {
+lab=VDD}
+N 60 -330 60 -310 {
+lab=#net1}
+N 1740 -260 1810 -260 {
+lab=GND}
 C {devices/title.sym} 160 -30 0 0 {name=l1 author="Harald Pretl, IIC @ JKU"}
 C {devices/vsource.sym} 60 -280 0 0 {name=VDD1 value=1.8}
-C {devices/vdd.sym} 60 -320 0 0 {name=l2 lab=VDD}
+C {devices/vdd.sym} 60 -410 0 0 {name=l2 lab=VDD}
 C {devices/gnd.sym} 60 -230 0 0 {name=l3 lab=GND}
-C {devices/code.sym} 30 -570 0 0 {name=TT_MODELS
+C {devices/code.sym} 210 -760 0 0 {name=TT_MODELS
 only_toplevel=true
 format="tcleval( @value )"
 value="
 ** opencircuitdesign pdks install
-.lib $::SKYWATER_MODELS/sky130.lib.spice tt
+.lib sky130.lib.spice.tt.red tt
 
 "
 spice_ignore=false}
@@ -157,8 +161,7 @@ only_toplevel=false
 value="
 * ngspice commands
 ****************
-.include ../hpretl_tt03_temperature_sensor.pex.spice
-*.include /foss/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice
+.include hpretl_tt03_temperature_sensor.pex.spice
 
 ****************
 * Misc
@@ -167,17 +170,8 @@ value="
 .options method=gear maxord=2
 .temp 30
 
-*.save all
-.save clk rst st0 st1 st2 st3 st4 st5 st6 st7 i(VDD1)
-.control
-set num_threads=6
-tran 10u 0.6
-
-plot clk rst st0 st1 st2 st3 st4 st5 st6 st7
-
-set wr_vecnames
-write tb_tempsens.raw clk rst st0 st1 st2 st3 st4 st5 st6 st7 i(VDD1)
-.endc
+.tran 10u 20u 
+* 0.6
 "}
 C {devices/gnd.sym} 220 -210 0 0 {name=l21 lab=GND}
 C {devices/lab_wire.sym} 220 -300 1 0 {name=l22 sig_type=std_logic lab=ts_cfg5}
@@ -195,9 +189,9 @@ C {devices/vsource.sym} 460 -260 0 0 {name=V23 value=0}
 C {devices/vsource.sym} 520 -260 0 0 {name=V24 value=0}
 C {devices/vsource.sym} 660 -250 0 0 {name=VCM value="0 pulse(0 1.8 1u 1n 1n \{0.5/fclk\} \{1/fclk\})"}
 C {devices/gnd.sym} 660 -210 0 0 {name=l4 lab=GND}
-C {devices/vsource.sym} 660 -370 0 0 {name=VRES value="0 pwl(0 1.8 \{0.5/fclk\} 1.8 \{0.5/fclk+1n\} 0)"}
-C {devices/gnd.sym} 660 -330 0 0 {name=l5 lab=GND}
-C {devices/lab_wire.sym} 700 -410 0 1 {name=l6 sig_type=std_logic lab=rst}
+C {devices/vsource.sym} 660 -400 0 0 {name=VRES value="0 pwl(0 1.8 \{0.5/fclk\} 1.8 \{0.5/fclk+1n\} 0)"}
+C {devices/gnd.sym} 660 -360 0 0 {name=l5 lab=GND}
+C {devices/lab_wire.sym} 700 -440 0 1 {name=l6 sig_type=std_logic lab=rst}
 C {devices/lab_wire.sym} 700 -290 0 1 {name=l7 sig_type=std_logic lab=clk}
 C {hpretl_tt03_temperature_sensor.sym} 1150 -380 0 0 {name=x1}
 C {devices/gnd.sym} 1330 -340 0 0 {name=l8 lab=GND}
@@ -243,3 +237,14 @@ C {devices/lab_wire.sym} 1640 -460 0 1 {name=l30 sig_type=std_logic lab=st4}
 C {devices/lab_wire.sym} 1640 -440 0 1 {name=l31 sig_type=std_logic lab=st5}
 C {devices/lab_wire.sym} 1640 -420 0 1 {name=l32 sig_type=std_logic lab=st6}
 C {devices/lab_wire.sym} 1640 -400 0 1 {name=l33 sig_type=std_logic lab=st7}
+C {devices/spice_probe.sym} 1740 -540 0 0 {name=p1 attrs=""}
+C {devices/ammeter.sym} 60 -360 0 0 {name=Visupply}
+C {devices/spice_probe.sym} 1740 -520 0 0 {name=p2 attrs=""}
+C {devices/spice_probe.sym} 1740 -500 0 0 {name=p3 attrs=""}
+C {devices/spice_probe.sym} 1740 -480 0 0 {name=p4 attrs=""}
+C {devices/spice_probe.sym} 1740 -460 0 0 {name=p5 attrs=""}
+C {devices/spice_probe.sym} 1740 -440 0 0 {name=p6 attrs=""}
+C {devices/spice_probe.sym} 1740 -420 0 0 {name=p7 attrs=""}
+C {devices/spice_probe.sym} 1740 -400 0 0 {name=p8 attrs=""}
+C {devices/spice_probe.sym} 660 -440 0 0 {name=p9 attrs=""}
+C {devices/spice_probe.sym} 660 -290 0 0 {name=p10 attrs=""}

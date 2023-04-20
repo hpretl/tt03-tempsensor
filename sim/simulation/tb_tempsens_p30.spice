@@ -1,0 +1,71 @@
+** sch_path: /foss/designs/sim/tb_tempsens.sch
+**.subckt tb_tempsens
+VDD1 net1 GND 1.8
+.save i(vdd1)
+V19 ts_cfg5 GND 0
+.save i(v19)
+V20 ts_cfg4 GND 0
+.save i(v20)
+V21 ts_cfg3 GND 0
+.save i(v21)
+V22 ts_cfg2 GND 0
+.save i(v22)
+V23 ts_cfg1 GND 0
+.save i(v23)
+V24 ts_cfg0 GND 0
+.save i(v24)
+VCM clk GND 0 pulse(0 1.8 1u 1n 1n {0.5/fclk} {1/fclk})
+.save i(vcm)
+VRES rst GND 0 pwl(0 1.8 {0.5/fclk} 1.8 {0.5/fclk+1n} 0)
+.save i(vres)
+x1 rst ts_cfg0 ts_cfg1 ts_cfg2 ts_cfg3 ts_cfg4 ts_cfg5 st0 st1 st2 st3 st4 st5 st6 st7 clk VDD GND
++ hpretl_tt03_temperature_sensor
+C1 st7 GND 10f m=1
+C3 st1 GND 10f m=1
+C4 st0 GND 10f m=1
+C2 st3 GND 10f m=1
+C5 st2 GND 10f m=1
+C6 st5 GND 10f m=1
+C7 st4 GND 10f m=1
+C8 st6 GND 10f m=1
+.save v(st0)
+Visupply VDD net1 0
+.save i(visupply)
+.save v(st1)
+.save v(st2)
+.save v(st3)
+.save v(st4)
+.save v(st5)
+.save v(st6)
+.save v(st7)
+.save v(rst)
+.save v(clk)
+**** begin user architecture code
+
+** opencircuitdesign pdks install
+.lib sky130.lib.spice.tt.red tt
+
+
+
+
+
+* ngspice commands
+****************
+.include hpretl_tt03_temperature_sensor.pex.spice
+
+****************
+* Misc
+****************
+.param fclk=10k
+.options method=gear maxord=2
+.temp 30
+
+.tran 10u 0.6
+
+
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end
