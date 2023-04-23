@@ -18,7 +18,7 @@
 `default_nettype none
 
 module bin2dec (
-	input wire [5:0]    i_bin,
+	input wire [6:0]    i_bin,
     input wire          i_tens,
     input wire          i_ones,
 	output wire [3:0]   o_dec
@@ -27,7 +27,7 @@ module bin2dec (
     // we use this algorithm for BIN to BCD conversion (called "double-dabble"):
     // https://www.realdigital.org/doc/6dae6583570fd816d1d675b93578203d
 
-    reg [7:0] bcd;
+    reg [11:0] bcd;
     integer i;
 
     assign o_dec =  (i_tens == 1'b1) ? bcd[7:4] :
@@ -36,10 +36,11 @@ module bin2dec (
 
     always @(*) begin
         bcd=0;
-        for (i=0; i<6 ; i=i+1) begin
-            if (bcd[3:0] >= 5) bcd[3:0] = bcd[3:0] + 3;
-	        if (bcd[7:4] >= 5) bcd[7:4] = bcd[7:4] + 3;
-	        bcd = {bcd[6:0],i_bin[5-i]};
+        for (i=0; i<7 ; i=i+1) begin
+            if (bcd[03:00] >= 5) bcd[03:00] = bcd[03:00] + 3;
+	        if (bcd[07:04] >= 5) bcd[07:04] = bcd[07:04] + 3;
+	        if (bcd[11:08] >= 5) bcd[11:08] = bcd[11:08] + 3;
+	        bcd = {bcd[10:0],i_bin[6-i]};
         end
     end
 

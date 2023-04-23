@@ -5,7 +5,7 @@
 
 module tb_bin2dec;
 
-    reg [5:0] BIN;
+    reg [6:0] BIN;
     reg ONES = 1, TENS = 0;
     wire [3:0] DEC;
     integer i;
