@@ -38,8 +38,46 @@ module hpretl_tt03_temperature_sensor (
 
 	// size the design with these constants
 	localparam N_VDAC = 6;
+	localparam N_LUT = 6;
 	localparam N_CTR = 14; // 2**N_CTR gives roughly a second tick @ clk=10kHz
 
+	// pre-loaded LUT based on nominal simulation results; only even values div:2
+	// stored, otherwise does not fit the TinyTapeout area
+	localparam [(2**(N_VDAC-1))*N_LUT:1] LUT_PRELOAD = {
+		// output	// input
+		6'd00,		// 31
+		6'd00,		// 30
+		6'd00,		// 29
+		6'd00,		// 28
+		6'd00,		// 27
+		6'd00,		// 26
+		6'd00,		// 25
+		6'd00,		// 24
+		6'd05,		// 23
+		6'd10,		// 22
+		6'd15,		// 21
+		6'd19,		// 20
+		6'd23,		// 19
+		6'd27,		// 18
+		6'd30,		// 17
+		6'd34,		// 16
+		6'd38,		// 15
+		6'd42,		// 14
+		6'd45,		// 13
+		6'd47,		// 12
+		6'd49,		// 11
+		6'd49,		// 10
+		6'd49,		// 09
+		6'd49,		// 08
+		6'd49,		// 07
+		6'd49,		// 06
+		6'd49,		// 05
+		6'd49,		// 04
+		6'd49,		// 03
+		6'd49,		// 02
+		6'd49,		// 01
+		6'd49		// 00
+	};
 
 	// definition of external inputs
 	wire clk = io_in[0];
@@ -60,9 +98,9 @@ module hpretl_tt03_temperature_sensor (
 	// definition of internal wires and regs
 	reg [N_CTR-1:0] ctr;
 	reg [N_VDAC-1:0] tempsens_res_raw;
-	wire [N_VDAC-1:0] tempsens_res;
+	wire [N_VDAC:0] tempsens_res;
 	reg temp_delay_last;
-	reg [(2**(N_VDAC-1)*(N_VDAC-0))-1:0] cal_lut;
+	reg [(2**(N_VDAC-1))*N_LUT:1] cal_lut;
 
 	wire [1:0] meas_state = ctr[1:0];
 	wire [N_VDAC-1:0] dac_value = {N_VDAC{1'b1}} - ctr[N_VDAC+1:2];
@@ -84,7 +122,7 @@ module hpretl_tt03_temperature_sensor (
 	wire [7:0] dbg4 = {ctr[7:0]};
 	wire [7:0] dbg5 = {show_ones, show_tens, ctr[N_CTR-1:8]};
 	wire [7:0] dbg6 = {1'b0, idle_cycle, dac_value};
-	wire [7:0] dbg7 = {1'b1, cal_ena, tempsens_res};
+	wire [7:0] dbg7 = {cal_ena, tempsens_res};
 
 
 	// measurement state machine (meas_state)
@@ -159,20 +197,24 @@ module hpretl_tt03_temperature_sensor (
 
 	// loading of calibration LUT
 	always @(posedge cal_clk) begin
-		cal_lut <= {cal_lut[(2**(N_VDAC-1)*(N_VDAC-0))-2:0], cal_dat};
+		if (reset) begin
+			cal_lut <= LUT_PRELOAD;
+		end else begin
+			cal_lut <= {cal_lut[((2**(N_VDAC-1))*N_LUT)-1:1], cal_dat};
+		end
 	end
 
 	// assign wire array to LUT implemented a shift register (for easy load)
-	wire [N_VDAC-1:0] cal_lut_entries[0:(2**(N_VDAC-1))-1];
+	wire [N_LUT-1:0] cal_lut_entries[0:(2**(N_VDAC-1))-1];
 	genvar i;
 	generate
 		for (i=0; i < 2**(N_VDAC-1); i=i+1) begin : lut_assign
-			assign cal_lut_entries[i] = cal_lut[((6*(i+1))-1) -: 6];
+			assign cal_lut_entries[i] = cal_lut[(N_LUT*(i+1)) -: N_LUT];
 		end
 	endgenerate
 
 	// apply calibration LUT when enabled
-	assign tempsens_res = cal_ena ? cal_lut_entries[tempsens_res_raw[N_VDAC-2:0]] : tempsens_res_raw;
+	assign tempsens_res = cal_ena ? {cal_lut_entries[tempsens_res_raw[N_VDAC-2:0]], 1'b0} : {1'b0, tempsens_res_raw};
 
 
     // instantiate temperature-dependent delay (this is the core circuit)
