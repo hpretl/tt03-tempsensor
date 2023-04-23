@@ -3,7 +3,7 @@
 `include "hpretl_tt03_temperature_sensor.v"
 `timescale 1us/1ns
 
-`define RAW_MODE
+//`define RAW_MODE
 
 module tb_tempsens;
 
@@ -11,7 +11,7 @@ module tb_tempsens;
     reg RESET = 1;
     reg CAL_CLK = 0;
     reg CAL_DAT = 0;
-    reg CAL_ENA = 0;
+    reg CAL_ENA = 1;
 `ifdef RAW_MODE
     reg [2:0] DBG = 3'b011;
 `endif
@@ -25,9 +25,12 @@ module tb_tempsens;
         $dumpfile ("tb_tempsens.vcd");
         $dumpvars (0, tb_tempsens);
 
+        #50 CAL_CLK = 1;
+        #150 CAL_CLK = 0;
+
         #100 RESET = 0;
 
-        #600000 $finish;        
+        #1200000 $finish;        
     end
 
     // make clock 10kHz
