@@ -10,7 +10,7 @@ This synthesized mixed-signal design is intended for inclusion in the **Tiny Tap
 
 The core of the circuit is the timed discharge of a pre-charged parasitic capacitor, where a MOSFET operated in subthreshold operation is used to set the strongly temperature-dependent discharge current. The subthreshold operation of a MOSFET is achieved by driving its gate with a voltage-mode digital-analog converter (DAC).
 
-The DAC required for this temperature sensor is constructed from tristate-inverters, like the core discharge circuit. The concept of the DAC is shown in the figure below.
+The DAC required for this temperature sensor is constructed from tristate-inverters, like the core discharge circuit. The concept of the DAC is shown in the figure below. Note that the $N_\mathrm{up}$ and the $N_\mathrm{dn}$ can be realized from the same instances by using the data inputs, whereas in the concept drawing, these are shown independently.
 
 ![Voltage-mode DAC](doc/voltage_dac.png)
 
