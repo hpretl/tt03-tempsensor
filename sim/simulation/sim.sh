@@ -1,16 +1,44 @@
 #!/bin/bash
+# Copyright 2023 Harald Pretl
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# This is a simple shell-based simulation runner for ngspice using 
+# GNU parallel.
+
+echo "[INFO] Simulation runner starting."
+
+TMP_NAME=tmp
+TMP_SUFFIX=spice
+LOG_SUFFIX=log
+RAW_SUFFIX=raw
 
 # Remove old files, to make sure that new ones are created
-rm -f ./*.log
-rm -f ./*.raw
+rm -f ./*.${LOG_SUFFIX}
+rm -f ./*.${RAW_SUFFIX}
+rm -f ./$TMP_NAME*.$TMP_SUFFIX
 
-# Now start all sims in parallel
-ngspice -b -o tb_tempsens_p00.log -r tb_tempsens_p00.raw tb_tempsens_p00.spice &
-ngspice -b -o tb_tempsens_p30.log -r tb_tempsens_p30.raw tb_tempsens_p30.spice &
-ngspice -b -o tb_tempsens_p60.log -r tb_tempsens_p60.raw tb_tempsens_p60.spice &
-ngspice -b -o tb_tempsens_p90.log -r tb_tempsens_p90.raw tb_tempsens_p90.spice &
+# Prepare parameter sweeps
+cp tb_tempsens.spice $TMP_NAME.$TMP_SUFFIX
+for temp in $(seq -w 0 5 100)
+do
+    echo "[INFO] Creating simulation for temperature = $temp degC"
+    sed "s/__TEMP__/$temp/g" $TMP_NAME.$TMP_SUFFIX > "${TMP_NAME}${temp}.${TMP_SUFFIX}"
+done
+rm $TMP_NAME.$TMP_SUFFIX
 
-# wait for all to finish
-wait
+# Run the simulations in parallel by fully loading the machine
+find . -name "${TMP_NAME}*.$TMP_SUFFIX" | parallel ngspice -b -o {}.${LOG_SUFFIX} -r {}.${RAW_SUFFIX} {} 
+
+# Wait for all to finish
 echo "[DONE] All simulations finished!"
-
