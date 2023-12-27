@@ -1,0 +1,54 @@
+v {xschem version=3.4.5 file_version=1.2
+}
+G {}
+K {type=primitive
+format="@name @pinlist @symname"
+template="name=x1"
+}
+V {}
+S {}
+E {}
+L 4 50 -170 310 -170 {}
+L 4 50 0 310 0 {}
+L 4 -20 -160 0 -160 {}
+L 4 340 -160 360 -160 {}
+L 4 310 -170 340 -170 {}
+L 4 310 0 340 0 {}
+L 4 10 -170 50 -170 {}
+L 4 0 -170 10 -170 {}
+L 4 0 0 50 0 {}
+L 4 -20 -140 0 -140 {}
+L 4 -20 -120 0 -120 {}
+L 4 -20 -100 0 -100 {}
+L 4 -20 -80 0 -80 {}
+L 4 -20 -60 0 -60 {}
+L 4 -20 -40 0 -40 {}
+L 4 -20 -20 0 -20 {}
+L 4 0 -170 0 0 {}
+L 4 340 -170 340 0 {}
+L 7 180 -190 180 -170 {}
+L 7 180 0 180 20 {}
+B 5 -22.5 -162.5 -17.5 -157.5 {name=i_dac[0] dir=in sim_pinnumber=1}
+B 5 -22.5 -142.5 -17.5 -137.5 {name=i_dac[1] dir=in sim_pinnumber=2}
+B 5 -22.5 -122.5 -17.5 -117.5 {name=i_dac[2] dir=in sim_pinnumber=3}
+B 5 -22.5 -102.5 -17.5 -97.5 {name=i_dac[3] dir=in sim_pinnumber=4}
+B 5 -22.5 -82.5 -17.5 -77.5 {name=i_dac[4] dir=in sim_pinnumber=5}
+B 5 -22.5 -62.5 -17.5 -57.5 {name=i_dac[5] dir=in sim_pinnumber=6}
+B 5 -22.5 -42.5 -17.5 -37.5 {name=i_en dir=in sim_pinnumber=7}
+B 5 -22.5 -22.5 -17.5 -17.5 {name=i_meas dir=in sim_pinnumber=8}
+B 5 357.5 -162.5 362.5 -157.5 {name=o_res dir=out sim_pinnumber=9}
+B 5 177.5 -192.5 182.5 -187.5 {name=vccd1 dir=inout sim_pinnumber=10}
+B 5 177.5 17.5 182.5 22.5 {name=vssd1 dir=inout sim_pinnumber=11}
+T {@symname} 230 4 0 0 0.3 0.3 {}
+T {@name} 235 28 0 0 0.2 0.2 {}
+T {vccd1} 165 -156 2 1 0.2 0.2 {}
+T {vssd1} 165 -6 2 1 0.2 0.2 {}
+T {i_dac[0]} 5 -164 0 0 0.2 0.2 {}
+T {o_res} 335 -164 0 1 0.2 0.2 {}
+T {i_dac[1]} 5 -144 0 0 0.2 0.2 {}
+T {i_dac[2]} 5 -124 0 0 0.2 0.2 {}
+T {i_dac[3]} 5 -104 0 0 0.2 0.2 {}
+T {i_dac[4]} 5 -84 0 0 0.2 0.2 {}
+T {i_dac[5]} 5 -64 0 0 0.2 0.2 {}
+T {i_en} 5 -44 0 0 0.2 0.2 {}
+T {i_meas} 5 -24 0 0 0.2 0.2 {}

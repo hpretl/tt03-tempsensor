@@ -1,0 +1,70 @@
+** sch_path: /foss/designs/sim/tb_tempsens.sch
+**.subckt tb_tempsens
+VDD1 net1 GND 1.8
+Vclk strb GND 0 pwl(0 0 20u 0 20.1u 1.8)
+x1 dac0 dac1 dac2 dac3 dac4 dac5 ena strb res VDD GND temp_sensor
+C4 res GND 10f m=1
+Visupply VDD net1 0
+.save i(visupply)
+.save v(strb)
+.save v(res)
+Ven ena GND 1.8
+Vdac0 dac0 GND 1.8 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval0)
+Vdac1 dac1 GND 1.8 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval1)
+Vdac2 dac2 GND 1.8 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval2)
+Vdac3 dac3 GND 1.8 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval3)
+Vdac4 dac4 GND 1.8 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval4)
+Vdac5 dac5 GND 1.8 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval5)
+.save v(dac5)
+.save v(dac4)
+.save v(dac3)
+.save v(dac1)
+.save v(dac0)
+.save v(dac2)
+.save v(vdd)
+**** begin user architecture code
+
+** opencircuitdesign pdks install
+.lib sky130.lib.spice.tt.red tt
+
+
+
+
+
+* ngspice commands
+****************
+.include temp_sensor.pex.spice
+
+****************
+* Misc
+****************
+.param dacval0=1.8
+.param dacval1=0
+.param dacval2=0
+.param dacval3=0
+.param dacval4=0
+.param dacval5=0
+
+.options method=gear maxord=2
+.temp __TEMP__
+
+.control
+
+tran 10u 20m
+meas tran tmeas WHEN v(res)=0.9
+
+let k=length(time)-1
+let dac={dac0[k]/1.8*1 + dac1[k]/1.8*2 + dac2[k]/1.8*4 + dac3[k]/1.8*8 + dac4[k]/1.8*16 + dac5[k]/1.8*32}
+let simtemp=__TEMP__
+print dac simtemp tmeas > res__TEMP__.txt
+exit
+
+.endc
+
+
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end

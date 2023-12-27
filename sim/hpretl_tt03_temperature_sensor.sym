@@ -1,0 +1,98 @@
+v {xschem version=3.4.5 file_version=1.2
+}
+G {}
+K {type=primitive
+format="@name @pinlist @symname"
+template="name=x1"
+}
+V {}
+S {}
+E {}
+L 4 50 -360 310 -360 {}
+L 4 50 0 310 0 {}
+L 4 -20 -160 0 -160 {}
+L 4 340 -160 360 -160 {}
+L 4 310 -360 340 -360 {}
+L 4 310 0 340 0 {}
+L 4 10 -360 50 -360 {}
+L 4 0 -360 10 -360 {}
+L 4 0 0 50 0 {}
+L 4 -20 -140 0 -140 {}
+L 4 -20 -120 0 -120 {}
+L 4 -20 -100 0 -100 {}
+L 4 -20 -80 0 -80 {}
+L 4 -20 -60 0 -60 {}
+L 4 -20 -40 0 -40 {}
+L 4 -20 -20 0 -20 {}
+L 4 340 -140 360 -140 {}
+L 4 340 -120 360 -120 {}
+L 4 340 -100 360 -100 {}
+L 4 340 -80 360 -80 {}
+L 4 340 -60 360 -60 {}
+L 4 340 -40 360 -40 {}
+L 4 340 -20 360 -20 {}
+L 4 0 -170 0 0 {}
+L 4 340 -170 340 0 {}
+L 4 340 -300 360 -300 {}
+L 4 340 -280 360 -280 {}
+L 4 340 -260 360 -260 {}
+L 4 340 -240 360 -240 {}
+L 4 340 -220 360 -220 {}
+L 4 340 -200 360 -200 {}
+L 4 340 -340 360 -340 {}
+L 4 340 -360 340 -170 {}
+L 4 -0 -360 0 -170 {}
+L 7 180 -380 180 -360 {}
+L 7 180 0 180 20 {}
+B 5 -22.5 -162.5 -17.5 -157.5 {name=io_in[0] dir=in sim_pinnumber=1}
+B 5 -22.5 -142.5 -17.5 -137.5 {name=io_in[1] dir=in sim_pinnumber=2}
+B 5 -22.5 -122.5 -17.5 -117.5 {name=io_in[2] dir=in sim_pinnumber=3}
+B 5 -22.5 -102.5 -17.5 -97.5 {name=io_in[3] dir=in sim_pinnumber=4}
+B 5 -22.5 -82.5 -17.5 -77.5 {name=io_in[4] dir=in sim_pinnumber=5}
+B 5 -22.5 -62.5 -17.5 -57.5 {name=io_in[5] dir=in sim_pinnumber=6}
+B 5 -22.5 -42.5 -17.5 -37.5 {name=io_in[6] dir=in sim_pinnumber=7}
+B 5 -22.5 -22.5 -17.5 -17.5 {name=io_in[7] dir=in sim_pinnumber=8}
+B 5 357.5 -162.5 362.5 -157.5 {name=io_out[0] dir=out sim_pinnumber=9}
+B 5 357.5 -142.5 362.5 -137.5 {name=io_out[1] dir=out sim_pinnumber=10}
+B 5 357.5 -122.5 362.5 -117.5 {name=io_out[2] dir=out sim_pinnumber=11}
+B 5 357.5 -102.5 362.5 -97.5 {name=io_out[3] dir=out sim_pinnumber=12}
+B 5 357.5 -82.5 362.5 -77.5 {name=io_out[4] dir=out sim_pinnumber=13}
+B 5 357.5 -62.5 362.5 -57.5 {name=io_out[5] dir=out sim_pinnumber=14}
+B 5 357.5 -42.5 362.5 -37.5 {name=io_out[6] dir=out sim_pinnumber=15}
+B 5 357.5 -22.5 362.5 -17.5 {name=io_out[7] dir=out sim_pinnumber=16}
+B 5 357.5 -302.5 362.5 -297.5 {name=dbg_result[0] dir=out sim_pinnumber=17}
+B 5 357.5 -282.5 362.5 -277.5 {name=dbg_result[1] dir=out sim_pinnumber=18}
+B 5 357.5 -262.5 362.5 -257.5 {name=dbg_result[2] dir=out sim_pinnumber=19}
+B 5 357.5 -242.5 362.5 -237.5 {name=dbg_result[3] dir=out sim_pinnumber=20}
+B 5 357.5 -222.5 362.5 -217.5 {name=dbg_result[4] dir=out sim_pinnumber=21}
+B 5 357.5 -202.5 362.5 -197.5 {name=dbg_result[5] dir=out sim_pinnumber=22}
+B 5 357.5 -342.5 362.5 -337.5 {name=dbg_delay dir=out sim_pinnumber=23}
+B 5 177.5 -382.5 182.5 -377.5 {name=vccd1 dir=inout sim_pinnumber=24}
+B 5 177.5 17.5 182.5 22.5 {name=vssd1 dir=inout sim_pinnumber=25}
+T {@symname} 230 4 0 0 0.3 0.3 {}
+T {@name} 235 28 0 0 0.2 0.2 {}
+T {vccd1} 165 -346 2 1 0.2 0.2 {}
+T {vssd1} 165 -6 2 1 0.2 0.2 {}
+T {io_in[0]} 5 -164 0 0 0.2 0.2 {}
+T {io_out[0]} 335 -164 0 1 0.2 0.2 {}
+T {io_in[1]} 5 -144 0 0 0.2 0.2 {}
+T {io_in[2]} 5 -124 0 0 0.2 0.2 {}
+T {io_in[3]} 5 -104 0 0 0.2 0.2 {}
+T {io_in[4]} 5 -84 0 0 0.2 0.2 {}
+T {io_in[5]} 5 -64 0 0 0.2 0.2 {}
+T {io_in[6]} 5 -44 0 0 0.2 0.2 {}
+T {io_in[7]} 5 -24 0 0 0.2 0.2 {}
+T {io_out[1]} 335 -144 0 1 0.2 0.2 {}
+T {io_out[2]} 335 -124 0 1 0.2 0.2 {}
+T {io_out[3]} 335 -104 0 1 0.2 0.2 {}
+T {io_out[4]} 335 -84 0 1 0.2 0.2 {}
+T {io_out[5]} 335 -64 0 1 0.2 0.2 {}
+T {io_out[6]} 335 -44 0 1 0.2 0.2 {}
+T {io_out[7]} 335 -24 0 1 0.2 0.2 {}
+T {dbg_result[0]} 335 -304 0 1 0.2 0.2 {}
+T {dbg_result[1]} 335 -284 0 1 0.2 0.2 {}
+T {dbg_result[2]} 335 -264 0 1 0.2 0.2 {}
+T {dbg_result[3]} 335 -244 0 1 0.2 0.2 {}
+T {dbg_result[4]} 335 -224 0 1 0.2 0.2 {}
+T {dbg_result[5]} 335 -204 0 1 0.2 0.2 {}
+T {dbg_delay} 335 -344 0 1 0.2 0.2 {}

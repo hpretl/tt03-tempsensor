@@ -1,0 +1,5 @@
+set num_threads=1
+set ngbehavior=hsa
+set ng_nomodcheck
+set enable_noisy_r
+set filetype=ascii
