@@ -10,6 +10,9 @@ module tb (
     // testbench is controlled by test.py
     input clk,
     input rst,
+    input en_quick_transition,
+    input [4:0] tempsens_cfg,
+    output tempsens_pwm,
     output [6:0] segments
    );
 
@@ -21,12 +24,13 @@ module tb (
     end
 
     // wire up the inputs and outputs
-    wire [7:0] inputs = {6'b0, rst, clk};
+    wire [7:0] inputs = {tempsens_cfg, en_quick_transition, rst, clk};
     wire [7:0] outputs;
     assign segments = outputs[6:0];
+    assign tempsens_pwm = outputs[7];
 
     // instantiate the DUT
-    seven_segment_seconds seven_segment_seconds(
+    hpretl_tt03_temperature_sensor tempsens (
         `ifdef GL_TEST
             .vccd1( 1'b1),
             .vssd1( 1'b0),
@@ -35,4 +39,4 @@ module tb (
         .io_out (outputs)
         );
 
-endmodule
+endmodule // tb

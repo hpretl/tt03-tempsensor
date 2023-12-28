@@ -6,9 +6,13 @@ project:
 # If using an HDL, set wokwi_id as 0 and uncomment and list your source files here. 
 # Source files must be in ./src and you must list each source file separately
   source_files:        
-    - counter.v
-    - decoder.v
-  top_module:  "seven_segment_seconds"      # put the name of your top module here, make it unique by prepending your github username
+    - hpretl_tt03_temperature_sensor.v
+    - tempsense.v
+    - vdac.v
+    - vdac_cell.v
+    - bin2dec.v
+    - seg7.v
+  top_module:  "hpretl_tt03_temperature_sensor"      # put the name of your top module here, make it unique by prepending your github username
 
 # Keep a track of the submission yaml
 yaml_version: 3.0
@@ -18,47 +22,66 @@ yaml_version: 3.0
 #
 # Here is a great example: https://github.com/davidsiaw/tt02-davidsiaw-stackcalc/blob/38c5647f83aad2aec675d566aa3d67b98f0aac81/info.yaml
 documentation: 
-  author:       "Matt Venn"
-  title:        "7 segment seconds"
+  author:       "Harald Pretl"
+  title:        "Synthesizable Digital Temperature Sensor"
   language:     "Verilog"
-  description:  "Count up to 10, one second at a time."
+  description:  "Measure the on-chip temperature and display on the LED display."
 
 # Longer description of how the project works. You can use standard markdown format.
   how_it_works: |
-      Uses a set of registers to divide the clock, and then some combinational logic
-      to convert from binary to decimal for the display.
+      By creatively twisting the use of a tristate-inverter (EINVP) a voltage DAC is built. This
+      voltage-mode DAC is used in another twisted arrangement of an EINVP to bias an NMOS into
+      subthreshold operation to discharge a pre-charged capacitor (the input capacitor of an inverter).
+      Since the subthreshold current of a MOSFET is a strong function of temperature, the resulting
+      delay time is also a strong function of temperature, thus a digital temperature sensor is built.
 
-      Puts a slower square wave output on output 7.
+      The temperature-dependent digital signal is output at the LED display, showing tens (dot off) and ones (dot on).
+
+      A calibration engine via a LUT is included, to allow to linearize and calibrate the shown
+      temperature code.
+
+      io_in[0] is used as a CLK signal, and io_in[1] is used a RESET.
+
+      io_in[4:2] is used to load and enable the calibration engine.
+
+      io_in[7:5] is used to enable various debug modes, presenting internal state signals to the io_out.
 
 # Instructions on how someone could test your project, include things like what buttons do what and how to set the clock if needed
   how_to_test:  |
-      After reset, the counter should increase by one every second.
+      After reset, one temperature measurement is taken per second and displayed using the LEDs. A code ranging 0...63 is
+      displayed with tens first (dot off) and ones later (dot on).
+
+      During normal operation io_in[7:5] have to be set to 000. The different debug modes are documented in the Verilog code.
+
+      For calibration, the internal LUT can be serially loaded by using CAL_CLK (io_in[2]) and CAL_DAT (io_in[3]). Once fully
+      loaded the calibration engine is enabled by setting CAL_ENA (io_in[4]) to 1 (setting it to 0 displays the raw sensor
+      code).
 
 # A description of what the inputs do
   inputs:               
     - clock
     - reset
-    - none
-    - none
-    - none
-    - none
-    - none
-    - none
+    - cal_clk
+    - cal_dat
+    - cal_ena
+    - debug_mode[0]
+    - debug_mode[1]
+    - debug_mode[2]
 # A description of what the outputs do
   outputs:
-    - segment a
-    - segment b
-    - segment c
-    - segment d
-    - segment e
-    - segment f
-    - segment g
-    - slow clock output
+    - segment a (or debug information)
+    - segment b (or debug information)
+    - segment c (or debug information)
+    - segment d (or debug information)
+    - segment e (or debug information)
+    - segment f (or debug information)
+    - segment g (or debug information)
+    - indicate ones or tens (or debug information)
 
 # The following fields are optional
-  tag:          "timer, test"      # comma separated list of tags: test encryption, experiment, clock, animation, utility, industrial, pwm, fpga, alu, microprocessor, risc, riscv, sensor, signal generator, fft, filter, music, bcd, sound, serial, timer, random number generator, calculator, decoder, counter, puzzle, multiplier, game, oscillator,
+  tag:          "sensor, temperature, analog"      # comma separated list of tags: test encryption, experiment, clock, animation, utility, industrial, pwm, fpga, alu, microprocessor, risc, riscv, sensor, signal generator, fft, filter, music, bcd, sound, serial, timer, random number generator, calculator, decoder, counter, puzzle, multiplier, game, oscillator,
   external_hw:  ""      # Describe any external hardware needed
-  discord:      "mattvenn#1907"      # Your discord handle, used for communication and automatically assigning tapeout role after a submission
-  doc_link:     ""      # URL to longer form documentation, eg the README.md in your repository
-  clock_hz:     1000       # Clock frequency in Hz (if required)
-  picture:      ""      # relative path to a picture in your repository
+  discord:      ""      # Your discord handle, used for communication and automatically assigning tapeout role after a submission
+  doc_link:     "https://github.com/hpretl/tt03-tempsensor/blob/main/README.md"      # URL to longer form documentation, eg the README.md in your repository
+  clock_hz:     10000   # Clock frequency in Hz (if required)
+  picture:      "doc/synthesized_temperature_sensor.png"      # relative path to a picture in your repository

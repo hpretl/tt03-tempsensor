@@ -6,10 +6,14 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 segments = [ 63, 6, 91, 79, 102, 109, 124, 7, 127, 103 ]
 
 @cocotb.test()
-async def test_7seg(dut):
+async def test_tempsens(dut):
     dut._log.info("start")
-    clock = Clock(dut.clk, 10, units="us")
+    clock = Clock(dut.clk, 100, units="us")
     cocotb.start_soon(clock.start())
+
+    dut._log.info("configuration")
+    dut.en_quick_transition.value = 0
+    dut.tempsens_cfg = 3
 
     dut._log.info("reset")
     dut.rst.value = 1
