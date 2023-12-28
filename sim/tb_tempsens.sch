@@ -109,29 +109,39 @@ value="
 ****************
 * Misc
 ****************
-.param dacval0=1.8
+.param dacval0=0
 .param dacval1=0
-.param dacval2=0
+.param dacval2=1.8
 .param dacval3=0
-.param dacval4=0
+.param dacval4=1.8
 .param dacval5=0
 
 .options method=gear maxord=2
 .temp -30
-*.temp 125
-*.temp 30
+
+
+.save x1.temp1.dac_vout_notouch_
+.save x1.temp1.dcdel_capnode_notouch_
+
 
 .control
 
 tran 10u 20m
+
+plot v(x1.temp1.dac_vout_notouch_) v(x1.temp1.dcdel_capnode_notouch_) v(res)
+
 meas tran tmeas WHEN v(res)=0.9
 
 let k=length(time)-1
-let dac=\{dac0[k]/1.8*1 + dac1[k]/1.8*2 + dac2[k]/1.8*4 + dac3[k]/1.8*8 + dac4[k]/1.8*16 + dac5[k]/1.8*32\}
+let daccode=\{dac0[k]/1.8*1 + dac1[k]/1.8*2 + dac2[k]/1.8*4 + dac3[k]/1.8*8 + dac4[k]/1.8*16 + dac5[k]/1.8*32\}
+let vdac=v(x1.temp1.dac_vout_notouch_)[k]
 
-print dac tmeas > res.txt
-exit
+*print dac tmeas > res.txt
+print daccode
+print vdac
+print tmeas
 
+*exit
 .endc
 "}
 C {devices/gnd.sym} 220 -210 0 0 {name=l21 lab=GND}
