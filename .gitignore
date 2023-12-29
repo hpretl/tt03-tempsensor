@@ -8,9 +8,6 @@ src/__pycache__/
 src/results.xml
 src/user_config.tcl
 *.raw
-sim/simulation/tb_tempsens.spice
 *.cvcrc
 *.out
-sim/hpretl_tt03_temperature_sensor.mag
-sim/hpretl_tt03_temperature_sensor.pex.spice
 *.bkp
