@@ -1,10 +1,11 @@
-v {xschem version=3.1.0 file_version=1.2
+v {xschem version=3.4.5 file_version=1.2
 }
 G {}
 K {}
 V {}
 S {}
 E {}
+T {ts_cfg[5:3] = dbg[2:0]} 210 -170 0 0 0.4 0.4 {}
 N 60 -250 60 -230 {
 lab=GND}
 N 220 -220 220 -210 {
@@ -161,17 +162,20 @@ only_toplevel=false
 value="
 * ngspice commands
 ****************
-.include hpretl_tt03_temperature_sensor.pex.spice
+.include hpretl_tt03_temperature_sensor_golden.pex.spice
 
 ****************
 * Misc
 ****************
 .param fclk=10k
-.options method=gear maxord=2
+.options method=gear maxord=2 klu
 .temp 30
 
-.tran 10u 20u 
-* 0.6
+.control
+*tran 10u 30m
+tran 10u 20u
+write tb_tempsens.raw
+.endc
 "}
 C {devices/gnd.sym} 220 -210 0 0 {name=l21 lab=GND}
 C {devices/lab_wire.sym} 220 -300 1 0 {name=l22 sig_type=std_logic lab=ts_cfg5}
@@ -182,8 +186,8 @@ C {devices/lab_wire.sym} 460 -300 1 0 {name=l26 sig_type=std_logic lab=ts_cfg1}
 C {devices/lab_wire.sym} 520 -300 1 0 {name=l27 sig_type=std_logic lab=ts_cfg0}
 C {devices/vsource.sym} 220 -260 0 0 {name=V19 value=0
 }
-C {devices/vsource.sym} 280 -260 0 0 {name=V20 value=0}
-C {devices/vsource.sym} 340 -260 0 0 {name=V21 value=0}
+C {devices/vsource.sym} 280 -260 0 0 {name=V20 value=1.8}
+C {devices/vsource.sym} 340 -260 0 0 {name=V21 value=1.8}
 C {devices/vsource.sym} 400 -260 0 0 {name=V22 value=0}
 C {devices/vsource.sym} 460 -260 0 0 {name=V23 value=0}
 C {devices/vsource.sym} 520 -260 0 0 {name=V24 value=0}
