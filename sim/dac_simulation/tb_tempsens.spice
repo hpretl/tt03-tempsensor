@@ -1,0 +1,89 @@
+** sch_path: /foss/designs/sim/tb_tempsens.sch
+**.subckt tb_tempsens
+VDD1 net1 GND 1.8
+Vclk strb GND 0 pwl(0 0 20u 0 20.1u 1.8)
+x1 dac0 dac1 dac2 dac3 dac4 dac5 ena strb res VDD GND temp_sensor
+C4 res GND 10f m=1
+Visupply VDD net1 0
+.save i(visupply)
+.save v(strb)
+.save v(res)
+Ven ena GND 1.8
+Vdac0 dac0 GND dacval0 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval0)
+Vdac1 dac1 GND dacval1 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval1)
+Vdac2 dac2 GND dacval2 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval2)
+Vdac3 dac3 GND dacval3 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval3)
+Vdac4 dac4 GND dacval4 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval4)
+Vdac5 dac5 GND dacval5 pwl(0 1.8 10u 1.8 10.001u 0 30u 0 30.001u dacval5)
+.save v(dac5)
+.save v(dac4)
+.save v(dac3)
+.save v(dac1)
+.save v(dac0)
+.save v(dac2)
+.save v(vdd)
+**** begin user architecture code
+
+** opencircuitdesign pdks install
+*.lib sky130.lib.spice.tt.red tt
+*.lib sky130.lib.spice.ss.red ss
+.lib sky130.lib.spice.ff.red ff
+
+
+
+
+
+* ngspice commands
+****************
+.include temp_sensor.pex.spice
+
+****************
+* Misc
+****************
+.param daccode=__VAR__
+
+.param dacval5=(daccode>31)*1.8
+.param dacval4=((daccode-dacval5*32/1.8)>15)*1.8
+.param dacval3=((daccode-dacval5*32/1.8-dacval4*16/1.8)>7)*1.8
+.param dacval2=((daccode-dacval5*32/1.8-dacval4*16/1.8-dacval3*8/1.8)>3)*1.8
+.param dacval1=((daccode-dacval5*32/1.8-dacval4*16/1.8-dacval3*8/1.8-dacval2*4/1.8)>1)*1.8
+.param
++ dacval0=((daccode-dacval5*32/1.8-dacval4*16/1.8-dacval3*8/1.8-dacval2*4/1.8-dacval1*2/1.8)>0)*1.8
+
+
+.options method=gear maxord=2
+.temp __TEMP__
+
+
+.save x1.temp1.dac_vout_notouch_
+.save x1.temp1.dcdel_capnode_notouch_
+
+
+.control
+
+*tran 10u 20m
+*plot v(x1.temp1.dac_vout_notouch_) v(x1.temp1.dcdel_capnode_notouch_) v(res)
+*meas tran tmeas WHEN v(res)=0.9
+*let k=length(time)-1
+*let daccode={dac0[k]/1.8*1 + dac1[k]/1.8*2 + dac2[k]/1.8*4 + dac3[k]/1.8*8 + dac4[k]/1.8*16 + dac5[k]/1.8*32}
+*let vdac=v(x1.temp1.dac_vout_notouch_)[k]
+*print dac tmeas > res.txt
+
+op
+
+print v(x1.temp1.dac_vout_notouch_) > res.__TEMP__.__VAR__.txt
+*print v(x1.temp1.dac_vout_notouch_)
+*print tmeas
+
+*write tb_tempsens.raw
+
+exit
+.endc
+
+
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end
