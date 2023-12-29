@@ -172,8 +172,8 @@ value="
 .temp 30
 
 .control
-*tran 10u 30m
-tran 10u 20u
+tran 10u 30m
+*tran 10u 20u
 write tb_tempsens.raw
 .endc
 "}
