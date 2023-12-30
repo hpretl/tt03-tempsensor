@@ -11,3 +11,4 @@ src/user_config.tcl
 *.cvcrc
 *.out
 *.bkp
+.pycache

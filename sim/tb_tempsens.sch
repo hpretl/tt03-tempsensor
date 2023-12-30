@@ -168,13 +168,22 @@ value="
 * Misc
 ****************
 .param fclk=10k
-.options method=gear maxord=2 klu
+.options method=gear maxord=2
 .temp 30
 
 .control
 tran 10u 30m
+<<<<<<< Updated upstream
 *tran 10u 20u
 write tb_tempsens.raw
+=======
+*tran 10u 1u
+
+let k=length(time)-1
+print st0[k] st1[k] st2[k] st3[k] st4[k] st5[k] st6[k] st7[k] > res.txt
+
+exit
+>>>>>>> Stashed changes
 .endc
 "}
 C {devices/gnd.sym} 220 -210 0 0 {name=l21 lab=GND}
@@ -193,7 +202,7 @@ C {devices/vsource.sym} 460 -260 0 0 {name=V23 value=0}
 C {devices/vsource.sym} 520 -260 0 0 {name=V24 value=0}
 C {devices/vsource.sym} 660 -250 0 0 {name=VCM value="0 pulse(0 1.8 1u 1n 1n \{0.5/fclk\} \{1/fclk\})"}
 C {devices/gnd.sym} 660 -210 0 0 {name=l4 lab=GND}
-C {devices/vsource.sym} 660 -400 0 0 {name=VRES value="0 pwl(0 1.8 \{0.5/fclk\} 1.8 \{0.5/fclk+1n\} 0)"}
+C {devices/vsource.sym} 660 -400 0 0 {name=VRES value="1.8 pwl(0 1.8 \{0.5/fclk\} 1.8 \{0.5/fclk+1n\} 0)"}
 C {devices/gnd.sym} 660 -360 0 0 {name=l5 lab=GND}
 C {devices/lab_wire.sym} 700 -440 0 1 {name=l6 sig_type=std_logic lab=rst}
 C {devices/lab_wire.sym} 700 -290 0 1 {name=l7 sig_type=std_logic lab=clk}
@@ -241,14 +250,12 @@ C {devices/lab_wire.sym} 1640 -460 0 1 {name=l30 sig_type=std_logic lab=st4}
 C {devices/lab_wire.sym} 1640 -440 0 1 {name=l31 sig_type=std_logic lab=st5}
 C {devices/lab_wire.sym} 1640 -420 0 1 {name=l32 sig_type=std_logic lab=st6}
 C {devices/lab_wire.sym} 1640 -400 0 1 {name=l33 sig_type=std_logic lab=st7}
-C {devices/spice_probe.sym} 1740 -540 0 0 {name=p1 attrs=""}
 C {devices/ammeter.sym} 60 -360 0 0 {name=Visupply}
-C {devices/spice_probe.sym} 1740 -520 0 0 {name=p2 attrs=""}
-C {devices/spice_probe.sym} 1740 -500 0 0 {name=p3 attrs=""}
-C {devices/spice_probe.sym} 1740 -480 0 0 {name=p4 attrs=""}
-C {devices/spice_probe.sym} 1740 -460 0 0 {name=p5 attrs=""}
-C {devices/spice_probe.sym} 1740 -440 0 0 {name=p6 attrs=""}
-C {devices/spice_probe.sym} 1740 -420 0 0 {name=p7 attrs=""}
-C {devices/spice_probe.sym} 1740 -400 0 0 {name=p8 attrs=""}
-C {devices/spice_probe.sym} 660 -440 0 0 {name=p9 attrs=""}
-C {devices/spice_probe.sym} 660 -290 0 0 {name=p10 attrs=""}
+C {devices/spice_probe.sym} 1680 -540 0 0 {name=p1 attrs=""}
+C {devices/spice_probe.sym} 1680 -520 0 0 {name=p2 attrs=""}
+C {devices/spice_probe.sym} 1680 -500 0 0 {name=p3 attrs=""}
+C {devices/spice_probe.sym} 1680 -480 0 0 {name=p4 attrs=""}
+C {devices/spice_probe.sym} 1680 -460 0 0 {name=p5 attrs=""}
+C {devices/spice_probe.sym} 1680 -440 0 0 {name=p6 attrs=""}
+C {devices/spice_probe.sym} 1680 -420 0 0 {name=p7 attrs=""}
+C {devices/spice_probe.sym} 1680 -400 0 0 {name=p8 attrs=""}
