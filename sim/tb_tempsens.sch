@@ -173,17 +173,12 @@ value="
 
 .control
 tran 10u 30m
-<<<<<<< Updated upstream
 *tran 10u 20u
-write tb_tempsens.raw
-=======
-*tran 10u 1u
 
 let k=length(time)-1
 print st0[k] st1[k] st2[k] st3[k] st4[k] st5[k] st6[k] st7[k] > res.txt
 
 exit
->>>>>>> Stashed changes
 .endc
 "}
 C {devices/gnd.sym} 220 -210 0 0 {name=l21 lab=GND}
