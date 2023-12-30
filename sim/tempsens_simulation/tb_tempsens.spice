@@ -1,0 +1,65 @@
+** sch_path: /foss/designs/sim/tb_tempsens.sch
+**.subckt tb_tempsens
+VDD1 VDD GND 1.8
+V19 ts_cfg5 GND 0
+V20 ts_cfg4 GND 0
+V21 ts_cfg3 GND 0
+V22 ts_cfg2 GND 0
+V23 ts_cfg1 GND 0
+V24 ts_cfg0 GND 0
+VCM clk GND 0 pulse(0 1.8 1u 1n 1n {0.5/fclk} {1/fclk})
+VRES rst GND 1.8 pwl(0 1.8 {0.5/fclk} 1.8 {0.5/fclk+1n} 0)
+x1 clk rst ts_cfg0 ts_cfg1 ts_cfg2 ts_cfg3 ts_cfg4 ts_cfg5 st0 st1 st2 st3 st4 st5 st6 st7 VDD GND hpretl_tt03_temperature_sensor
+C1 st7 GND 10f m=1
+C3 st1 GND 10f m=1
+C4 st0 GND 10f m=1
+C2 st3 GND 10f m=1
+C5 st2 GND 10f m=1
+C6 st5 GND 10f m=1
+C7 st4 GND 10f m=1
+C8 st6 GND 10f m=1
+.save v(st0)
+.save v(st1)
+.save v(st2)
+.save v(st3)
+.save v(st4)
+.save v(st5)
+.save v(st6)
+.save v(st7)
+**** begin user architecture code
+
+** opencircuitdesign pdks install
+.lib sky130.lib.spice.tt.red tt
+
+
+
+
+
+* ngspice commands
+****************
+.include hpretl_tt03_temperature_sensor.pex.spice
+
+****************
+* Misc
+****************
+.param fclk=10k
+.options method=gear maxord=2 noinit
+.temp 30
+
+.control
+
+set num_threads=8
+
+tran 10u 30m
+
+let k=length(time)-1
+print st0[k] st1[k] st2[k] st3[k] st4[k] st5[k] > res.txt
+
+exit
+.endc
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end
