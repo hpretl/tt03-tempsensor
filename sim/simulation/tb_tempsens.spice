@@ -2,14 +2,14 @@
 **.subckt tb_tempsens
 VDD1 net1 GND 1.8
 V19 ts_cfg5 GND 0
-V20 ts_cfg4 GND 1.8
-V21 ts_cfg3 GND 1.8
+V20 ts_cfg4 GND 0
+V21 ts_cfg3 GND 0
 V22 ts_cfg2 GND 0
 V23 ts_cfg1 GND 0
 V24 ts_cfg0 GND 0
 VCM clk GND 0 pulse(0 1.8 1u 1n 1n {0.5/fclk} {1/fclk})
 VRES rst GND 1.8 pwl(0 1.8 {0.5/fclk} 1.8 {0.5/fclk+1n} 0)
-x1 rst ts_cfg0 ts_cfg1 ts_cfg2 ts_cfg3 ts_cfg4 ts_cfg5 st0 st1 st2 st3 st4 st5 st6 st7 clk VDD GND hpretl_tt03_temperature_sensor
+x1 clk rst ts_cfg0 ts_cfg1 ts_cfg2 ts_cfg3 ts_cfg4 ts_cfg5 st0 st1 st2 st3 st4 st5 st6 st7 VDD GND hpretl_tt03_temperature_sensor
 C1 st7 GND 10f m=1
 C3 st1 GND 10f m=1
 C4 st0 GND 10f m=1
@@ -39,7 +39,7 @@ Visupply VDD net1 0
 
 * ngspice commands
 ****************
-.include hpretl_tt03_temperature_sensor_golden.pex.spice
+.include hpretl_tt03_temperature_sensor.pex.spice
 
 ****************
 * Misc
@@ -49,16 +49,14 @@ Visupply VDD net1 0
 .temp 30
 
 .control
+
 tran 10u 30m
-*tran 10u 20u
 
 let k=length(time)-1
-print st0[k] st1[k] st2[k] st3[k] st4[k] st5[k] st6[k] st7[k] > res.txt
+print st0[k] st1[k] st2[k] st3[k] st4[k] st5[k] > res.txt
 
 exit
 .endc
-
-
 
 **** end user architecture code
 **.ends
